@@ -21,7 +21,7 @@ public class MemberListController extends HttpServlet {
 		
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		
+		System.out.println("/member/list doGet()");
 		MemberDao dao = new MemberDao();
 		List<MemberDto> result = dao.MemberList();
 		request.setAttribute("MemberList", result);

@@ -11,34 +11,58 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import test1.jdbckh.common.jdbc.JdbcTemplate;
 import test1.jdbckh.member.model.dto.MemberDto;
 import static test1.jdbckh.common.jdbc.JdbcTemplate.*;
 
 public class MemberDao {
 	
 	public int insertMember(Connection conn, MemberDto dto) {
+		System.out.println("[insertMember dao] dto: "+dto);
 		int result = 0;
-		String query = "select * from CUSTOMER_INFO";
+		String query = "insert into CUSTOMER_INFO VALUES (seq_no.nextval,?,?,?,to_date(?,'yyyy-mm-dd'),?,?)";
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, dto.getCustoNo());
-			pstmt.setString(2, dto.getCustName());
-			pstmt.setString(3, dto.getPhone());
-			pstmt.setString(4, dto.getAddress());
-			pstmt.setString(5, dto.getJoinDate());
-			pstmt.setString(6, dto.getGrade());
-			pstmt.setString(7, dto.getCity());
-			result = pstmt.executeUpdate();
+//			pstmt.setInt(1, dto.getCustNo());
+				pstmt.setString(1, dto.getCustName());
+				pstmt.setString(2, dto.getPhone());
+				pstmt.setString(3, dto.getAddress());
+				pstmt.setString(4, dto.getJoinDate());
+				pstmt.setString(5, dto.getGrade());
+				pstmt.setString(6, dto.getCity());
+				result = pstmt.executeUpdate();
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			close(pstmt);
 		}
-		System.out.println("[member insert dao result]"+result);
+		System.out.println("[insertMember dao result]"+result);
 		return result;
 	}
-	  
+	public MemberDto selectOne(Connection conn, int custNo) {
+		MemberDto result = null;
+		String query = "select CUSTNO, CUSTNAME, PHONE, ADDRESS, JOINDATE, GRADE, CITY FROM CUSTOMER_INFO WHERE CUSTNO = ?";
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, custNo);
+			rs = pstmt.executeQuery();	
+		if(rs.next()) {
+			result = new MemberDto(rs.getInt("CustNo"), rs.getString("custName"), rs.getString("Phone"), rs.getString("Address"),
+					rs.getString("joinDate"), rs.getString("Grade"), rs.getString("City"));
+		}
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JdbcTemplate.close(rs);
+			JdbcTemplate.close(pstmt);
+		}
+	return result;
+	}
 // 전체 테이블 나오기 
 	public List<MemberDto> MemberList() {
 		
@@ -57,14 +81,14 @@ public class MemberDao {
 				result = new ArrayList<MemberDto>();
 				while(rs.next() == true) {
 					MemberDto dto = new MemberDto();
-					dto.setCustoNo(rs.getInt("CustNo"));
+					dto.setCustNo(rs.getInt("CustNo"));
 					dto.setCustName(rs.getString("CustName"));
 					dto.setPhone(rs.getString("phone"));
 					dto.setAddress(rs.getString("Address"));
 					dto.setJoinDate(rs.getString("joinDate"));
 					dto.setGrade(rs.getString("Grade"));
 					dto.setCity(rs.getString("City"));
-					
+	
 					result.add(dto);	
 				}
 				
@@ -76,11 +100,42 @@ public class MemberDao {
 				close(pstmt);
 				close(conn);
 			}
-			
+//			System.out.println(result);
 			return result;
 		} // FUNCTION
 	
-	
+	public int update(Connection conn, MemberDto dto) {
+		System.out.println("[Member Dao update] dto:" + dto);
+		int result = -1;  // update 경우 0도 정상 결과값일 수 있으므로 -1을 초기값
+		String query = "UPDATE CUSTOMER_INFO SET CUSTNAME=?, PHONE=?, ADDRESS=?,"
+				+ " JOINDATE=?, GRADE=?, CITY=? WHERE CUSTNO = ?";
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, dto.getCustName());
+			pstmt.setString(2, dto.getPhone());
+			pstmt.setString(3, dto.getAddress());
+			pstmt.setString(4, dto.getJoinDate());
+			pstmt.setString(5, dto.getGrade());
+			pstmt.setString(6, dto.getCity());
+			pstmt.setInt(7, dto.getCustNo());
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+	    } finally {
+	        try {
+	            if (pstmt != null) {
+	                pstmt.close();
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Handle the exception appropriately
+	        }
+	    }
+	    System.out.println("[Member Dao update] return:" + result);
+	    return result;
+	}
 	
 	
 }// CLASS
