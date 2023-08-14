@@ -50,6 +50,7 @@ public class MemberModifyServletDo extends HttpServlet {
 		dto.setCity(city);
 		
 		int result = service.update(dto);
+		System.out.println(result);
 		if(result > 0) {
 			// success
 			response.sendRedirect(request.getContextPath()+"/member/list");

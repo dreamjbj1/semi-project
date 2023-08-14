@@ -7,7 +7,24 @@
 <meta charset="UTF-8">
 <title>회원목록조회/수정</title>
 </head>
+	<style>
+		h2{
+			text-align: center;
+				
+		}
+		.container{
+			display: flex;
+  			justify-content: center; 
+  			align-items: center; 
+ 			margin: 100px 0;
+ 			
+		}
+		#button{
+			border: 1px solid #000;
+			text-align: center;
+	</style>
 <body>
+<jsp:include page="/WEB-INF/view/header.jsp" />
 	<h2>회원목록조회/수정</h2>
 
 	<div class="container">
@@ -44,13 +61,15 @@
 				<td><input type="text" name="city" value="${mvo.city}"></td>
 			</tr>
 		</table>
-		
-		<button type="submit">수정</button>
+	<div id = "button">
+		<button type="su bmit">수정</button>
 		<button type="button">조회</button>
+	</div>	
 	</form>
 	</div>
-	
+<jsp:include page="/WEB-INF/view/footer.jsp" />
 </body>
+
 <script>
 	function Check(){
 		alert("회원정보수정이 완료되었습니다.");
